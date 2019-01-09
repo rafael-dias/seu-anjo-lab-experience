@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Seu Anjo LAB Experience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+
+<style>
+    body {
+        background-color: #495057;
+        color: white;
+
+    }
+
+    .resultado {
+        background-color: #dc3545;
+        /* border: 1px solid #bd2130; */
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 25px;
+    }
+
+    .btn-sortear {
+        cursor: pointer;
+        border-radius: 10px;
+        margin-top: 25px;
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+        padding: 20px;
+    }
+
+    .btn-sortear:hover {
+        background-color: #16c0db;
+        border-color: #16c0db;
+    }
+
+    .rafael {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        /* position: relative; */
+        height: auto;
+        padding: 10px 0px;
+        background-color: #343a40;
+        color: #959595;
+        font-size: medium;
+        font-style: italic;
+        transition: all 1s ease;
+        text-align: center;
+    }
+
+    .rafael p {
+        margin: 0;
+    }
+
+  
+
+    .jumbinho {
+        background-color: #343a40 !important;
+        /* max-height: 70px; */
+        padding-top: 15px;
+        padding-bottom: 15px;
+        text-align: center;
+    }
+
+    .display-4 {
+        font-size: 2.5rem !important;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="jumbotron jumbotron-fluid jumbinho">
+            <div class="container">
+                <h1 class="display-4">Seu Anjo LAB Experience</h1>
+                <!-- <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p> -->
+            </div>
+        </div>
+        <div class="container text-center" style="padding-top: 100px;">
+            <h3>Olá {{quem | capitalize}}!</h3>
+            <hr>
+            <div class="btn-sortear" v-show="!sorteado" @click="Sortear">
+                <h5>Clique aqui para sortear o Seu Anjo</h5>
+            </div>
+            <img v-show="load" src="./img/load.svg" alt="load">
+
+            <div v-show="sorteado && resultado">
+                <div v-show="!erro">Seu anjo é o(a):</div>
+                <div class="resultado">
+                    <h1 v-show="erro"> {{msg}} {{quem | capitalize}}</h1>
+                    <h1 v-show="!erro"> {{amigo | capitalize}}</h1>
+                </div>
+<p v-show="!erro" style="margin-top:15px"> <em>Guarde bem o nome do seu anjo. Que tal tirar um print?! ;)</em> </p>
+            </div>
+
+        </div>
+        <div class="rafael">
+            <p>
+                Rafael Dias - Design e Desenvolvimento Web | rafael.arteg@gmail.com | 54 98162-2557
+            </p>
+
+        </div>
+
+    </div>
+
+    <script>
+        Vue.filter('capitalize', function (value) {
+            if (!value) return ''
+            value = value.toString()
+            return value.charAt(0).toUpperCase() + value.slice(1)
+        })
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                sorteado: false,
+                quem: '',
+                amigo: '',
+                erro: false,
+                msg: '',
+                load: false,
+                resultado: false
+            },
+            created: function () {
+                this.quem = window.location.search.split("?quem=")[1] || "!"
+            },
+            methods: {
+                Sortear() {
+                    this.sorteado = true
+                    this.load = true
+                    let self = this
+                    let xhr = new XMLHttpRequest();
+                    let server =
+                        "https://script.google.com/macros/s/AKfycbwQi9JgcagfjE_MfOcIsWJWyfqjXFmqWy6fJEG8k8BchQF8_Po/exec?quem=" +
+                        this.quem
+                    xhr.open("GET", server);
+                    xhr.onload = function () {
+                        let resposta = xhr.responseText;
+                        resposta = JSON.parse(resposta);
+
+                        console.log(resposta)
+                        self.amigo = resposta.amigo
+                        self.load = false
+                        self.resultado = true
+                        if (resposta.erro) {
+                            self.erro = resposta.erro
+                            self.msg = "Ja foi sorteado o anjo do(a)"
+                        }
+                    }
+                    xhr.send();
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
